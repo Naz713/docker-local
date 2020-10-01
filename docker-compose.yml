@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+    nginx:
+        container_name: nginx
+        build:
+            context: .
+            dockerfile: Dockerfile-nginx
+        volumes:
+            - ./carriers:/var/www/carriers
+        ports:
+            - 8201:80
+        networks:
+            - mired
+
+    carriers:
+        container_name: carriers
+        build:
+            context: .
+            dockerfile: Dockerfile
+        volumes:
+            - ./carriers:/var/www/carriers
+        networks:
+            - mired
+        environment:
+            - COMPOSER_MEMORY_LIMIT=-1
+
+networks:
+  mired:
+    driver: bridge
+
