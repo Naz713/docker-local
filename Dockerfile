@@ -19,4 +19,6 @@ RUN curl -sS https://get.symfony.com/cli/installer | bash && mv /root/.symfony/b
 
 COPY ./carriers/ /var/www/carriers
 
+RUN composer install
+
 WORKDIR /var/www/carriers
