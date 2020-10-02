@@ -10,13 +10,13 @@
 
 namespace App\Controller;
 
+use Monolog\Handler\SwiftMailerHandler;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Doctrine\ORM\EntityManagerInterface;
 
 
 class RegisterController extends AbstractController
@@ -37,7 +37,7 @@ class RegisterController extends AbstractController
      * @return Response
      * @throws \Exception
      */
-    public function registerAction(Request $request, LoggerInterface $logger)
+    public function registerAction(Request $request, LoggerInterface $logger, \Swift_Mailer $mailer)
     {
         $carrierId = $request->get('carrier_id');
         $carrierName = $request->get('carrier_name');
@@ -58,6 +58,9 @@ class RegisterController extends AbstractController
             providerEmail : $providerEmail
             notes : $notes ");
 
+        /*
+         * Check for carrier sended
+         */
         if ( strlen($carrierId)<=0 && (strlen($carrierName)<=0 || strlen($carrierEmail)<=0) )
         {
             return new JsonResponse(array(
@@ -66,6 +69,9 @@ class RegisterController extends AbstractController
             ));
         }
 
+        /*
+         * Check for provider sended
+         */
         if ( strlen($providerId)<=0 && (strlen($providerName)<=0 || strlen($providerEmail)<=0) )
         {
             return new JsonResponse(array(
@@ -81,6 +87,10 @@ class RegisterController extends AbstractController
         if (strlen($carrierId)<=0){
             $carrierId = null;
         }
+
+        /*
+         * Insert Register
+         */
 
         $cn = $this->getDoctrine()->getManager()->getConnection();
 
@@ -110,7 +120,18 @@ class RegisterController extends AbstractController
         $pstmt->execute();
 
 
-        //TODO Send email
+        /*
+         * Send email
+         */
+
+        $message = (new \Swift_Message("Integración TiLatina - $carrierName / $providerName") )
+            ->setFrom("robot@bpm.tilatina.com")
+            ->setTo([$carrierEmail, $providerEmail])
+            ->setBody(
+                "$carrierName ha iniciado una integración con TiLatina y su proveedor $providerName.\n
+                Con la siguiente información:\n$notes",
+                'text/html');
+        $mailer->send($message);
 
         return new JsonResponse(array(
             "code" => 200,
