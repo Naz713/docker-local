@@ -12,17 +12,23 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Request;
 
 class RegisterController extends AbstractController
 {
     /**
-     * @Route("/register", name="register")
+     * @Route("/protrans/{local}", name="register")
+     * @param Request $request
+     * @param $local
+     * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function index()
+    public function indexMex(Request $request, $local)
     {
-        return $this->render('register/index.html.twig', [
-            'controller_name' => 'RegisterController',
+        return $this->render(
+            'register/index.html.twig', [
+                 "local" => $local
         ]);
     }
+
 }
 
