@@ -2,13 +2,40 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
+        <title>{% block title %}TiLatina!{% endblock %}</title>
 
         <link rel="stylesheet" href="">
-        {% block stylesheets %}{% endblock %}
+        {# Archivos CSS que aplican para todos las pantallas #}
+        {{ encore_entry_link_tags('app') }}
+
+        {% block stylesheets %}
+
+        {% endblock %}
     </head>
     <body>
+        <header class="h-20 bg-teal-300 flex justify-between p-4">
+            <div>
+                <span class="text-white text-lg">Registro</span>
+            </div>
+            <div>
+                {% if local|lower == 'mx' %}
+                    <span class="border-1 p-1 bg-white">
+                        <a href="{{ path("register", {"local": "us"}) }}">US</a>
+                    </span>
+                {% elseif local|lower == 'us' %}
+                    <span class="border-1 p-1 bg-white">
+                        <a href="{{ path("register", {"local": "mx"}) }}">MX</a>
+                    </span>
+                {% endif %}
+            </div>
+        </header>
         {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
+
+
+        {# Archivos JS que aplican para todos las pantallas #}
+        {{ encore_entry_script_tags('app') }}
+
+        {% block javascripts %}
+        {% endblock %}
     </body>
 </html>

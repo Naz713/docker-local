@@ -1,22 +1,25 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { useFormik } from "formik";
 import * as Yup from 'yup';
+import $ from 'jquery';
 
 const formSchema = Yup.object().shape({
-    carrier_id: Yup.number().min(0, "Seleccione un transportista"),
+    carrier_id: Yup.number().min(0, "Seleccione un transportista").required("Este campo es obligatorio"),
     other_carrier: Yup.string(),
-    scac: Yup.string(),
-    carrier_email: Yup.string().required("Este campo es obligatorio"),
-    provider_id: Yup.number().min(0, "Seleccione un proveedor"),
+    scac: Yup.string().max(10, ""),
+    carrier_email: Yup.string().email("El correo no es válido").required("Este campo es obligatorio"),
+    provider_id: Yup.number().min(0, "Seleccione un proveedor").required("Este campo es obligatorio"),
     other_provider: Yup.string(),
-    provider_email: Yup.string().required("Este campo es obligatorio"),
-    provider_notes: Yup.string().required("Este campo es obligatorio")
+    provider_email: Yup.string().email("El correo no es válido").required("Este campo es obligatorio"),
+    provider_notes: Yup.string()
 });
 
 const Register = () => {
+    const [providers, setProviders] = useState([]);
+    const [carriers, setCarriers] = useState([]);
 
-    let initValues = {
+    const [initValues, setInitValues] = useState({
         carrier_id: -1,
         other_carrier: "",
         scac: "",
@@ -26,7 +29,7 @@ const Register = () => {
         other_provider: "",
         provider_email: "",
         provider_notes: ""
-    };
+    });
 
     const formik = useFormik({
         initialValues: initValues,
@@ -36,6 +39,41 @@ const Register = () => {
         },
         enableReinitialize: true
     });
+
+    const getFfs = async () => {
+        let url = $("#getFf").val();
+        let result = await $.ajax({
+            url: url,
+            type: "POST",
+            processData: false,  // tell jQuery not to process the data
+            contentType: false,
+            data: {},
+        });
+
+        return !result.error && result.data ;
+    };
+
+    useEffect(() => {
+        let isSubscribed = true;
+        const getData = async() => {
+
+            if (isSubscribed) {
+                let response = await getFfs();
+                if(response) {
+                    let {carriers, providers} = response;
+                    setProviders(providers);
+                    setCarriers(carriers);
+                }
+
+            }
+        };
+
+        getData();
+
+        return () => {
+            isSubscribed = false
+        }
+    }, []);
 
     return (
         <div className="flex justify-center">
@@ -51,14 +89,33 @@ const Register = () => {
                             focus:border-gray-500"
                             id="carrier_id"
                             name="carrier_id"
-                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            onChange={(ev) => {
+                                formik.handleChange(ev);
+
+                                let {target} = ev;
+                                let {value} = target;
+                                let carrierSelected = carriers.find(carrier => carrier.id === value);
+                                console.log("car", carrierSelected);
+                                if(carrierSelected) {
+                                    setInitValues(Object.assign({}, formik.values, {
+                                        scac: carrierSelected.scac,
+                                        carrier_id: value
+                                    }));
+                                }
+                            }}
                             value={formik.values.carrier_id}
                         >
                             <option value={-1}>&lt;Seleccione&gt;</option>
-                            <option value={1} >New Mexico</option>
-                            <option value={2} >Missouri</option>
-                            <option value={999}>Otro</option>
+                            <option value={999}>[Otro]</option>
+                            {
+                                carriers.map((carrier, index) => {
+                                    return <option value={carrier.id} key={index}>{carrier.name}</option>
+                                })
+                            }
+
                         </select>
+
                         {formik.touched.carrier_id && formik.errors.carrier_id ? <div className="text-red-600 text-sm">{formik.errors.carrier_id}</div> : null}
                     </div>
                     {
@@ -72,9 +129,11 @@ const Register = () => {
                                 id="other_carrier"
                                 name="other_carrier"
                                 type="text"
+                                maxLength={100}
                                 placeholder="Escriba el nombre del transportista"
                                 onChange={formik.handleChange}
                                 value={formik.values.other_carrier}
+                               onBlur={formik.handleBlur}
                             />
                             {formik.touched.other_carrier && formik.errors.other_carrier ? <div className="text-red-600 text-sm">{formik.errors.other_carrier}</div> : null}
                         </div> : null
@@ -90,8 +149,10 @@ const Register = () => {
                                    id="scac"
                                    name="scac"
                                    type="text"
+                                   maxLength={10}
                                    onChange={formik.handleChange}
                                    value={formik.values.scac}
+                                   onBlur={formik.handleBlur}
                             />
                             {formik.touched.scac && formik.errors.scac ? <div className="text-red-600 text-sm">{formik.errors.scac}</div> : null}
                         </div>
@@ -105,8 +166,10 @@ const Register = () => {
                                    id="carrier_email"
                                    name="carrier_email"
                                    type="text"
+                                   maxLength={50}
                                    onChange={formik.handleChange}
                                    value={formik.values.carrier_email}
+                                   onBlur={formik.handleBlur}
                             />
                             {formik.touched.carrier_email && formik.errors.carrier_email ? <div className="text-red-600 text-sm">{formik.errors.carrier_email}</div> : null}
                         </div>
@@ -127,11 +190,15 @@ const Register = () => {
                             name="provider_id"
                             onChange={formik.handleChange}
                             value={formik.values.provider_id}
+                            onBlur={formik.handleBlur}
                         >
-                                <option value="-1">&lt;Seleccione&gt;</option>
-                                <option value="1" data-scac="A">A</option>
-                                <option value="2" data-scac="B">B</option>
-                                <option value="999">Otro</option>
+                            <option value={-1}>&lt;Seleccione&gt;</option>
+                            <option value={999}>[Otro]</option>
+                            {
+                                providers.map((provider, index) => {
+                                    return <option value={provider.id} key={index} >{provider.name}</option>
+                                })
+                            }
                         </select>
                         {formik.touched.provider_id && formik.errors.provider_id ? <div className="text-red-600 text-sm">{formik.errors.provider_id}</div> : null}
                     </div>
@@ -146,8 +213,10 @@ const Register = () => {
                                    id="other_provider"
                                    name="other_provider"
                                    type="text"
+                                   maxLength={100}
                                    onChange={formik.handleChange}
                                    value={formik.values.other_provider}
+                                   onBlur={formik.handleBlur}
                             />
                             {formik.touched.other_provider && formik.errors.other_provider ? <div className="text-red-600 text-sm">{formik.errors.other_provider}</div> : null}
                         </div> : null
@@ -162,8 +231,10 @@ const Register = () => {
                                id="provider_email"
                                name="provider_email"
                                type="text"
+                               maxLength={50}
                                onChange={formik.handleChange}
                                value={formik.values.provider_email}
+                               onBlur={formik.handleBlur}
                         />
                         {formik.touched.provider_email && formik.errors.provider_email ? <div className="text-red-600 text-sm">{formik.errors.provider_email}</div> : null}
                     </div>
@@ -177,8 +248,10 @@ const Register = () => {
                                rows={6}
                                id="provider_notes"
                                name="provider_notes"
+                               maxLength={256}
                                onChange={formik.handleChange}
                                value={formik.values.provider_notes}
+                               onBlur={formik.handleBlur}
                         />
                         {formik.touched.provider_notes && formik.errors.provider_notes ? <div className="text-red-600 text-sm">{formik.errors.provider_notes}</div> : null}
                     </div>
