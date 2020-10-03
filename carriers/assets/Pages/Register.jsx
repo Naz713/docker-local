@@ -96,7 +96,7 @@ const Register = () => {
                                 let {target} = ev;
                                 let {value} = target;
                                 let carrierSelected = carriers.find(carrier => carrier.id === value);
-                                console.log("car", carrierSelected);
+
                                 if(carrierSelected) {
                                     setInitValues(Object.assign({}, formik.values, {
                                         scac: carrierSelected.scac,
