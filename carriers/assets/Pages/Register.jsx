@@ -16,18 +16,52 @@ const formSchema = Yup.object().shape({
     provider_notes: Yup.string()
 });
 
+const labels = {
+    mx: {
+        carrier: "Transportista",
+        scac: "SCAC",
+        other_carrier: "Nombre del transportista",
+        carrier_email: "Correo electrónico del transportista",
+        provider: "Proveedor de GPS",
+        other_provider: "Nombre del proveedor de GPS",
+        provider_email: "Correo electrónico del proveedor",
+        notes: "Notas",
+        send: "Enviar",
+        other: "Otro",
+        select: "Seleccione"
+    },
+    us: {
+        carrier: "Carrier",
+        scac: "SCAC",
+        other_carrier: "Carrier",
+        carrier_email: "Email carrier",
+        provider: "GPS Provider",
+        other_provider: "GPS privder",
+        provider_email: "Email provider",
+        notes: "Notes",
+        send: "Send",
+        other: "Other",
+        select: "Choose"
+    }
+};
+
 const Register = () => {
     const [providers, setProviders] = useState([]);
     const [carriers, setCarriers] = useState([]);
+    const [traduction, setTraduction] = useState({
+        carrier: "Transportista",
+        scac: "SCAC",
+        other_carrier: "Nombre del transportista",
+        carrier_email: "Correo electrónico del transportista",
+        provider: "Proveedor de GPS",
+        other_provider: "Nombre del proveedor de GPS",
+        provider_email: "Correo electrónico del proveedor",
+        notes: "Notas",
+        send: "Enviar",
+        other: "Otro",
+        select: "Seleccione"
+    });
 
-    const traduction = {
-        mx: {
-
-        },
-        us: {
-
-        }
-    };
     const [initValues, setInitValues] = useState({
         carrier_id: -1,
         other_carrier: "",
@@ -48,6 +82,7 @@ const Register = () => {
     };
 
     useEffect(() => {
+        let local = $("#local").val();
         let isSubscribed = true;
         const getData = async() => {
 
@@ -61,8 +96,9 @@ const Register = () => {
 
             }
         };
-
         getData();
+
+        setTraduction(labels[local]);
 
         return () => {
             isSubscribed = false
@@ -107,7 +143,7 @@ const Register = () => {
                     <div className="w-full px-3 mb-6 ">
                         <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                                htmlFor="carrier_id">
-                            Transportista
+                            { traduction.carrier }
                         </label>
                         <select className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3
                             px-4 pr-8 leading-tight focus:outline-none focus:bg-white
@@ -130,8 +166,8 @@ const Register = () => {
                             }}
                             value={formik.values.carrier_id}
                         >
-                            <option value={-1}>&lt;Seleccione&gt;</option>
-                            <option value={999}>[Otro]</option>
+                            <option value={-1}>&lt;{traduction.select}&gt;</option>
+                            <option value={999}>[{traduction.other}]</option>
                             {
                                 carriers.map((carrier, index) => {
                                     return <option value={carrier.id} key={index}>{carrier.name}</option>
@@ -145,7 +181,7 @@ const Register = () => {
                         Number(formik.values.carrier_id) === 999 ? <div className="w-full px-3 mb-6">
                             <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                                 htmlFor="otherScac">
-                                Otro transportista
+                                { traduction.other_carrier }
                             </label>
                             <input className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200
                                 py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
@@ -165,7 +201,7 @@ const Register = () => {
                         <div className="w-1/4">
                             <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                                    htmlFor="scac">
-                                SCAC
+                                { traduction.scac }
                             </label>
                             <input className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200
                                 py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
@@ -182,7 +218,7 @@ const Register = () => {
                         <div className="w-2/3">
                             <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                                    htmlFor="carrierEmail">
-                                Correo electrónico del transportista
+                                { traduction.carrier_email }
                             </label>
                             <input className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200
                                 py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
@@ -204,7 +240,7 @@ const Register = () => {
                     <div className="w-full px-3 mb-6 ">
                         <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                                htmlFor="provider">
-                            Proveedor de GPS
+                            { traduction.provider }
                         </label>
                         <select className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3
                             px-4 pr-8 leading-tight focus:outline-none focus:bg-white
@@ -215,8 +251,8 @@ const Register = () => {
                             value={formik.values.provider_id}
                             onBlur={formik.handleBlur}
                         >
-                            <option value={-1}>&lt;Seleccione&gt;</option>
-                            <option value={999}>[Otro]</option>
+                            <option value={-1}>&lt;{traduction.select}&gt;</option>
+                            <option value={999}>[{traduction.other}]</option>
                             {
                                 providers.map((provider, index) => {
                                     return <option value={provider.id} key={index} >{provider.name}</option>
@@ -229,7 +265,7 @@ const Register = () => {
                         Number(formik.values.provider_id) === 999 ? <div className="w-full px-3 mb-6 ">
                             <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                                    htmlFor="otherProvider">
-                                Otro proveedor de GPS
+                                { traduction.other_provider }
                             </label>
                             <input className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200
                                     py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
@@ -247,7 +283,7 @@ const Register = () => {
                     <div className="px-3 mb-6 w-2/3">
                         <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                                htmlFor="providerEmail">
-                            Correo electrónico del proveedor
+                            { traduction.provider_email }
                         </label>
                         <input className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200
                                 py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
@@ -264,7 +300,7 @@ const Register = () => {
                     <div className="w-full px-3 mb-6 ">
                         <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                                htmlFor="providerNotes">
-                            Notas
+                            { traduction.notes }
                         </label>
                         <textarea className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200
                                 py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
@@ -284,7 +320,7 @@ const Register = () => {
                         className="w-2/12 flex-shrink-0 bg-teal-500 hover:bg-teal-700 bg-green-til-2
                             hover:border-teal-700 text-sm border-1 text-white py-1 px-2 "
                         type="submit">
-                        Enviar
+                        { traduction.send }
                     </button>
                 </div>
             </form>
