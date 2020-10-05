@@ -20,6 +20,14 @@ const Register = () => {
     const [providers, setProviders] = useState([]);
     const [carriers, setCarriers] = useState([]);
 
+    const traduction = {
+        mx: {
+
+        },
+        us: {
+
+        }
+    };
     const [initValues, setInitValues] = useState({
         carrier_id: -1,
         other_carrier: "",
@@ -66,11 +74,11 @@ const Register = () => {
         let origin = $("#origin").val();
 
         let formData = new FormData();
-        formData.append("carrier_id", values.carrier_id === 999 ? "" : values.carrier_id);
+        formData.append("carrier_id", Number(values.carrier_id) === 999 ? "" : values.carrier_id);
         formData.append("carrier_name", values.other_carrier);
         formData.append("carrier_email", values.carrier_email);
         formData.append("scac", values.scac);
-        formData.append("provider_id", values.provider_id === 999 ? "" : values.provider_id);
+        formData.append("provider_id", Number(values.provider_id) === 999 ? "" : values.provider_id);
         formData.append("provider_name", values.other_provider);
         formData.append("provider_email", values.provider_email);
         formData.append("notes", values.provider_notes);
