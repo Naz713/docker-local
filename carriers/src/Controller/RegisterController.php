@@ -21,6 +21,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpClient\HttpClient;
 
 
 
@@ -152,19 +153,34 @@ class RegisterController extends AbstractController
             ));
         }
 
+        $cn = $this->getDoctrine()->getManager()->getConnection();
+
         if (strlen($providerId)<=0){
             $providerId = null;
+
+        } elseif (strlen($providerName)<=0){
+            $stmt = "SELECT alias FROM shipment_provider WHERE id = $providerId";
+
+            $pstmt = $cn->prepare($stmt, array(\PDO::CURSOR_FWDONLY, \PDO::ATTR_CURSOR));
+            $pstmt->execute();
+            $providerName = $pstmt->fetchColumn();
         }
 
         if (strlen($carrierId)<=0){
             $carrierId = null;
+
+        } elseif (strlen($carrierName)<=0){
+            $stmt = "SELECT name FROM shipment_ff WHERE id = $carrierId";
+
+            $pstmt = $cn->prepare($stmt, array(\PDO::CURSOR_FWDONLY, \PDO::ATTR_CURSOR));
+            $pstmt->execute();
+            $carrierName = $pstmt->fetchColumn();
         }
 
         /*
          * Insert Register
          */
 
-        $cn = $this->getDoctrine()->getManager()->getConnection();
 
         $stmt = "
         INSERT INTO shipment_register 
@@ -186,25 +202,56 @@ class RegisterController extends AbstractController
 
         $keys = array_keys($parameters);
 
+        /*
+         * BEGIN TRANSACTION
+         */
+        $cn->beginTransaction();
+
         $pstmt = $cn->prepare($stmt);
         foreach($keys as $key) {
             $pstmt->bindParam(":".$key, $parameters[$key]);
         }
         $pstmt->execute();
 
+        /*
+         * GET insertedId
+         */
+
+        $stmt = "SELECT LAST_INSERT_ID()";
+
+        $pstmt = $cn->prepare($stmt, array(\PDO::CURSOR_FWDONLY, \PDO::ATTR_CURSOR));
+        $pstmt->execute();
+        $registerId = $pstmt->fetchColumn();
+
+        /*
+         * COMMIT
+         */
+        $cn->commit();
+
 
         /*
          * Send email
          */
 
-        $message = (new \Swift_Message("Integración TiLatina - $carrierName / $providerName") )
-            ->setFrom("robot@bpm.tilatina.com")
-            ->setTo([$carrierEmail, $providerEmail])
-            ->setBody(
-                "$carrierName ha iniciado una integración con TiLatina y su proveedor $providerName.\n
-                Con la siguiente información:\n$notes",
-                'text/html');
-            $mailer->send($message);
+        $client = HttpClient::create();
+
+        $response = $client->request('POST',
+            "http://til.creacontrol.mx/ws/tracking/registerSendEmail?register_id=$registerId");
+
+        if ($response->getStatusCode() >= 400){
+            return new JsonResponse(array(
+                "code" => 206,
+                "msg" => "Email NO enviado"
+            ));
+        }
+        
+        $response = json_decode($response->getContent(), true);
+        if ( ((int) $response["code"]) != 200){
+            return new JsonResponse(array(
+                "code" => 206,
+                "msg" => "Email NO enviado"
+            ));
+        }
 
         return new JsonResponse(array(
             "code" => 200,
