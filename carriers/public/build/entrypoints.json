@@ -1,0 +1,29 @@
+{
+  "entrypoints": {
+    "app": {
+      "js": [
+        "/build/runtime.d94b3b43.js",
+        "/build/1.1a77c4d7.js",
+        "/build/app.764cc203.js"
+      ],
+      "css": [
+        "/build/app.6041d197.css"
+      ]
+    },
+    "Register": {
+      "js": [
+        "/build/runtime.d94b3b43.js",
+        "/build/1.1a77c4d7.js",
+        "/build/0.437ba6c9.js",
+        "/build/Register.b70955d7.js"
+      ]
+    },
+    "Login": {
+      "js": [
+        "/build/runtime.d94b3b43.js",
+        "/build/0.437ba6c9.js",
+        "/build/Login.f2c1cb13.js"
+      ]
+    }
+  }
+}
