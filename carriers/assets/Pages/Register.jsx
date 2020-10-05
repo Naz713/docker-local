@@ -63,6 +63,7 @@ const Register = () => {
 
     const onSubmit = async (values) => {
         let url = $("#sendInfoUrl").val();
+        let origin = $("#origin").val();
 
         let formData = new FormData();
         formData.append("carrier_id", values.carrier_id);
@@ -73,6 +74,7 @@ const Register = () => {
         formData.append("provider_name", values.other_provider);
         formData.append("provider_email", values.provider_email);
         formData.append("notes", values.provider_notes);
+        formData.append("origin", origin);
 
         let response = await doAjaxPost(url, formData);
         console.log("response", response);

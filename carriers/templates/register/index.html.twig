@@ -8,8 +8,9 @@
 
 <div class="w-full flex justify-center p-4">
     <input type="hidden" value="{{ local }}" id="local">
-    <input type="hidden" value="{{ path("register_get_ff", {"local": local}) }}" id="getFf">
-    <input type="hidden" value="{{ path("save_register_action", {"local": local}) }}" id="sendInfoUrl">
+    <input type="hidden" value="{{ path("register_get_ff", {"protras": local}) }}" id="getFf">
+    <input type="hidden" value="{{ path("save_register_action", {"protrans": local}) }}" id="sendInfoUrl">
+    <input type="hidden" value="protrans/{{ local }}" id="origin">
 
     <div id="root" class="w-full"></div>
 
