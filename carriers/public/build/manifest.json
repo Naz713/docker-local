@@ -1,12 +1,10 @@
 {
-  "build/Login.js": "/build/Login.js",
-  "build/Register.js": "/build/Register.js",
-  "build/app.css": "/build/app.css",
-  "build/app.js": "/build/app.js",
-  "build/runtime.js": "/build/runtime.js",
-  "build/vendors~Login~Register.js": "/build/vendors~Login~Register.js",
-  "build/vendors~Register.js": "/build/vendors~Register.js",
-  "build/vendors~Register~app.js": "/build/vendors~Register~app.js",
-  "build/vendors~Login.js": "/build/vendors~Login.js",
-  "build/vendors~app.js": "/build/vendors~app.js"
+  "build/0.437ba6c9.js": "/build/0.437ba6c9.js",
+  "build/1.1a77c4d7.js": "/build/1.1a77c4d7.js",
+  "build/Login.js": "/build/Login.f2c1cb13.js",
+  "build/Register.js": "/build/Register.68614789.js",
+  "build/app.css": "/build/app.2ca06080.css",
+  "build/app.js": "/build/app.764cc203.js",
+  "build/runtime.js": "/build/runtime.d94b3b43.js",
+  "build/images/loading-gif.19050de8.gif": "/build/images/loading-gif.19050de8.gif"
 }
