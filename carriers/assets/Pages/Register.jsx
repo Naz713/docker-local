@@ -4,6 +4,7 @@ import { useFormik } from "formik";
 import * as Yup from 'yup';
 import $ from 'jquery';
 import { doAjaxPost } from "../utilities";
+import loaderGif from '../images/loading-gif.gif';
 
 const formSchema = Yup.object().shape({
     carrier_id: Yup.number().min(0, "Seleccione un transportista").required("Este campo es obligatorio"),
@@ -45,35 +46,23 @@ const labels = {
     }
 };
 
+const init = {
+    carrier_id: -1,
+    other_carrier: "",
+    scac: "",
+    carrier_email: "",
+    provider_id: -1,
+    other_provider: "",
+    provider_email: "",
+    provider_notes: ""
+};
+
 const Register = () => {
     const [providers, setProviders] = useState([]);
     const [carriers, setCarriers] = useState([]);
-    const [traduction, setTraduction] = useState({
-        carrier: "Transportista",
-        scac: "SCAC",
-        other_carrier: "Nombre del transportista",
-        carrier_email: "Correo electrónico del transportista",
-        provider: "Proveedor de GPS",
-        other_provider: "Nombre del proveedor de GPS",
-        provider_email: "Correo electrónico del proveedor",
-        notes: "Notas",
-        send: "Enviar",
-        other: "Otro",
-        select: "Seleccione"
-    });
-
-    const [initValues, setInitValues] = useState({
-        carrier_id: -1,
-        other_carrier: "",
-        scac: "",
-        carrier_email: "",
-
-        provider_id: -1,
-        other_provider: "",
-        provider_email: "",
-        provider_notes: ""
-    });
-
+    const [traduction, setTraduction] = useState(labels.mx);
+    const [initValues, setInitValues] = useState(init);
+    const [loading, setLoading] = useState(false);
 
     const getFfs = async () => {
         let url = $("#getFf").val();
@@ -106,6 +95,7 @@ const Register = () => {
     }, []);
 
     const onSubmit = async (values) => {
+        setLoading(true);
         let url = $("#sendInfoUrl").val();
         let origin = $("#origin").val();
 
@@ -126,7 +116,9 @@ const Register = () => {
             alert(response.msg);
         }else {
             alert("Se realizó el registro correctamente");
+            setInitValues(init);
         }
+        setLoading(false);
     };
 
     const formik = useFormik({
@@ -319,11 +311,18 @@ const Register = () => {
                     <button
                         className="w-2/12 flex-shrink-0 bg-teal-500 hover:bg-teal-700 bg-green-til-2
                             hover:border-teal-700 text-sm border-1 text-white py-1 px-2 "
-                        type="submit">
+                        type="submit"
+                        disabled={loading}
+                    >
                         { traduction.send }
                     </button>
                 </div>
             </form>
+            {
+                loading ? <div className="absolute flex justify-center items-center w-full h-full" >
+                    <img src={loaderGif} alt="" className="w-10 h-10"/>
+                </div> : null
+            }
         </div>
     )
 };

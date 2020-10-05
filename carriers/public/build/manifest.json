@@ -8,5 +8,7 @@
   "build/vendors~Register.js": "/build/vendors~Register.js",
   "build/vendors~Register~app.js": "/build/vendors~Register~app.js",
   "build/vendors~Login.js": "/build/vendors~Login.js",
-  "build/vendors~app.js": "/build/vendors~app.js"
+  "build/vendors~app.js": "/build/vendors~app.js",
+  "build/images/loading-gif.jpg": "/build/images/loading-gif.b0e9b5f4.jpg",
+  "build/images/loading-gif.gif": "/build/images/loading-gif.19050de8.gif"
 }
