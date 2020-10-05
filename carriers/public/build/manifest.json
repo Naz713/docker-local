@@ -6,5 +6,7 @@
   "build/runtime.js": "/build/runtime.js",
   "build/vendors~Login~Register.js": "/build/vendors~Login~Register.js",
   "build/vendors~Register.js": "/build/vendors~Register.js",
-  "build/vendors~Register~app.js": "/build/vendors~Register~app.js"
+  "build/vendors~Register~app.js": "/build/vendors~Register~app.js",
+  "build/vendors~Login.js": "/build/vendors~Login.js",
+  "build/vendors~app.js": "/build/vendors~app.js"
 }

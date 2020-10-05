@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { useFormik } from "formik";
 import * as Yup from 'yup';
 import $ from 'jquery';
+import { doAjaxPost } from "../utilities";
 
 const formSchema = Yup.object().shape({
     carrier_id: Yup.number().min(0, "Seleccione un transportista").required("Este campo es obligatorio"),
@@ -42,14 +43,7 @@ const Register = () => {
 
     const getFfs = async () => {
         let url = $("#getFf").val();
-        let result = await $.ajax({
-            url: url,
-            type: "POST",
-            processData: false,  // tell jQuery not to process the data
-            contentType: false,
-            data: {},
-        });
-
+        let result = await doAjaxPost(url, {});
         return !result.error && result.data ;
     };
 
@@ -75,6 +69,28 @@ const Register = () => {
         }
     }, []);
 
+    const onSubmit = async (values) => {
+        let url = $("#sendInfoUrl").val();
+
+        let formData = new FormData();
+        formData.append("carrier_id", values.carrier_id);
+        formData.append("carrier_name", values.other_carrier);
+        formData.append("carrier_email", values.carrier_email);
+        formData.append("scac", values.scac);
+        formData.append("provider_id", values.provider_id);
+        formData.append("provider_name", values.other_provider);
+        formData.append("provider_email", values.provider_email);
+        formData.append("notes", values.provider_notes);
+
+        let response = await doAjaxPost(url, formData);
+        console.log("response", response);
+        if(response.code === 400) {
+            alert(response.msg);
+        }else {
+            alert("Se realizó el registro correctamente");
+        }
+    };
+
     return (
         <div className="flex justify-center">
             <form action="#" className="w-full max-w-2xl" onSubmit={formik.handleSubmit}>
@@ -97,12 +113,11 @@ const Register = () => {
                                 let {value} = target;
                                 let carrierSelected = carriers.find(carrier => carrier.id === value);
 
-                                if(carrierSelected) {
-                                    setInitValues(Object.assign({}, formik.values, {
-                                        scac: carrierSelected.scac,
-                                        carrier_id: value
-                                    }));
-                                }
+                                setInitValues(Object.assign({}, formik.values, {
+                                    scac: carrierSelected ? carrierSelected.scac : '',
+                                    carrier_id: value
+                                }));
+
                             }}
                             value={formik.values.carrier_id}
                         >
