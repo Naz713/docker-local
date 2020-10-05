@@ -66,18 +66,18 @@ const Register = () => {
         let origin = $("#origin").val();
 
         let formData = new FormData();
-        formData.append("carrier_id", values.carrier_id);
+        formData.append("carrier_id", values.carrier_id === 999 ? "" : values.carrier_id);
         formData.append("carrier_name", values.other_carrier);
         formData.append("carrier_email", values.carrier_email);
         formData.append("scac", values.scac);
-        formData.append("provider_id", values.provider_id);
+        formData.append("provider_id", values.provider_id === 999 ? "" : values.provider_id);
         formData.append("provider_name", values.other_provider);
         formData.append("provider_email", values.provider_email);
         formData.append("notes", values.provider_notes);
         formData.append("origin", origin);
 
         let response = await doAjaxPost(url, formData);
-        console.log("response", response);
+
         if(response.code === 400) {
             alert(response.msg);
         }else {
@@ -129,7 +129,6 @@ const Register = () => {
                                     return <option value={carrier.id} key={index}>{carrier.name}</option>
                                 })
                             }
-
                         </select>
 
                         {formik.touched.carrier_id && formik.errors.carrier_id ? <div className="text-red-600 text-sm">{formik.errors.carrier_id}</div> : null}
@@ -274,8 +273,8 @@ const Register = () => {
                 </div>
                 <div className="w-full flex justify-center">
                     <button
-                        className="w-2/12 flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500
-                            hover:border-teal-700 text-sm border-4 text-white py-1 px-2 "
+                        className="w-2/12 flex-shrink-0 bg-teal-500 hover:bg-teal-700 bg-green-til-2
+                            hover:border-teal-700 text-sm border-1 text-white py-1 px-2 "
                         type="submit">
                         Enviar
                     </button>
