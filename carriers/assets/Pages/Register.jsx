@@ -32,14 +32,6 @@ const Register = () => {
         provider_notes: ""
     });
 
-    const formik = useFormik({
-        initialValues: initValues,
-        validationSchema: formSchema,
-        onSubmit: (values) => {
-            console.log(values);
-        },
-        enableReinitialize: true
-    });
 
     const getFfs = async () => {
         let url = $("#getFf").val();
@@ -90,6 +82,13 @@ const Register = () => {
             alert("Se realizó el registro correctamente");
         }
     };
+
+    const formik = useFormik({
+        initialValues: initValues,
+        validationSchema: formSchema,
+        onSubmit: onSubmit,
+        enableReinitialize: true
+    });
 
     return (
         <div className="flex justify-center">

@@ -88,6 +88,7 @@ class RegisterController extends AbstractController
      */
     public function registerAction(Request $request, LoggerInterface $logger, \Swift_Mailer $mailer)
     {
+
         $carrierId = $request->get('carrier_id');
         $carrierName = $request->get('carrier_name');
         $carrierEmail = $request->get('carrier_email');
