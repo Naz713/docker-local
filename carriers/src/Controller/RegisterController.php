@@ -238,8 +238,14 @@ class RegisterController extends AbstractController
         $response = $client->request('POST',
             "http://til.creacontrol.mx/ws/tracking/registerSendEmail?register_id=$registerId");
 
-        $response = json_decode($response, true);
-        var_dump($response);
+        if ($response->getStatusCode() >= 400){
+            return new JsonResponse(array(
+                "code" => 206,
+                "msg" => "Email NO enviado"
+            ));
+        }
+        
+        $response = json_decode($response->getContent(), true);
         if ( ((int) $response["code"]) != 200){
             return new JsonResponse(array(
                 "code" => 206,
