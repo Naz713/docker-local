@@ -96,6 +96,7 @@ class RegisterController extends AbstractController
         $providerId = $request->get('provider_id');
         $providerName = $request->get('provider_name');
         $providerEmail = $request->get('provider_email');
+        $origin = $request->get('origin');
         $notes = $request->get('notes');
 
         $logger->info("
@@ -146,9 +147,9 @@ class RegisterController extends AbstractController
 
         $stmt = "
         INSERT INTO shipment_register 
-          (carrier_id, carrier_name, carrier_email, SCAC, provider_id, provider_name, provider_email, notes)
+          (carrier_id, carrier_name, carrier_email, SCAC, provider_id, provider_name, provider_email, origin, notes, generated)
         VALUES
-          (:carrier_id, :carrier_name, :carrier_email, :scac, :provider_id, :provider_name, :provider_email, :notes)
+          (:carrier_id, :carrier_name, :carrier_email, :scac, :provider_id, :provider_name, :provider_email, :origin, :notes, UTC_TIMESTAMP)
         ";
         $parameters = array(
             'carrier_id' => $carrierId,
@@ -158,6 +159,7 @@ class RegisterController extends AbstractController
             'provider_id' => $providerId,
             'provider_name' => $providerName,
             'provider_email' => $providerEmail,
+            'origin' => $origin,
             'notes' => $notes,
         );
 
