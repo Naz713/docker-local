@@ -21,6 +21,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpClient\HttpClient;
 
 
 
@@ -201,18 +202,50 @@ class RegisterController extends AbstractController
 
         $keys = array_keys($parameters);
 
+        /*
+         * BEGIN TRANSACTION
+         */
+        $cn->beginTransaction();
+
         $pstmt = $cn->prepare($stmt);
         foreach($keys as $key) {
             $pstmt->bindParam(":".$key, $parameters[$key]);
         }
         $pstmt->execute();
 
+        /*
+         * GET insertedId
+         */
+
+        $stmt = "SELECT LAST_INSERT_ID()";
+
+        $pstmt = $cn->prepare($stmt, array(\PDO::CURSOR_FWDONLY, \PDO::ATTR_CURSOR));
+        $pstmt->execute();
+        $registerId = $pstmt->fetchColumn();
+
+        /*
+         * COMMIT
+         */
+        $cn->commit();
+
 
         /*
          * Send email
          */
 
-        //TODO
+        $client = HttpClient::create();
+
+        $response = $client->request('POST',
+            "http://til.creacontrol.mx/ws/tracking/registerSendEmail?register_id=$registerId");
+
+        $response = json_decode($response, true);
+        var_dump($response);
+        if ( ((int) $response["code"]) != 200){
+            return new JsonResponse(array(
+                "code" => 206,
+                "msg" => "Email NO enviado"
+            ));
+        }
 
         return new JsonResponse(array(
             "code" => 200,
