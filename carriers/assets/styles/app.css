@@ -2,3 +2,28 @@ body, html {
     padding: 0;
     margin: 0;
 }
+
+
+.bg-blue-til-4 {
+    background-color: #005189;
+}
+
+.bg-blue-til-3 {
+    background-color: #216BAC;
+}
+
+.bg-blue-til-2 {
+    background-color: #008ECF;
+}
+
+.bg-blue-til-1 {
+    background-color: #00B3E3;
+}
+
+.bg-green-til-2 {
+    background-color: #95D600;
+}
+
+.bg-green-til-1 {
+    background-color: #C4D600;
+}

@@ -26,14 +26,33 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class RegisterController extends AbstractController
 {
+
+    /**
+     * @Route("/", name="root")
+     * @param Request $request
+     * @param $local
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function rootAction()
+    {
+        return $this->redirectToRoute("register", ["local" => "mx"]);
+    }
+
     /**
      * @Route("/protrans/{local}", name="register")
      * @param Request $request
      * @param $local
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function indexMex(Request $request, $local)
+    public function indexMex(Request $request, $local, LoggerInterface $logger)
     {
+        $logger->debug("LOCAL.....".$local);
+        if(is_null($local) || (strtolower($local) != "mx" && strtolower($local) != "us")) {
+            $logger->debug("----------LOCAL REDIRECT......".$local);
+            $local = "mx";
+            return $this->redirectToRoute("register", ["local" => "mx"]);
+        }
+
         return $this->render(
             'register/index.html.twig', [
                  "local" => $local
@@ -89,6 +108,8 @@ class RegisterController extends AbstractController
     public function registerAction(Request $request, LoggerInterface $logger, \Swift_Mailer $mailer)
     {
 
+        $origin = $request->get("origin", "mx");
+        $logger->debug("ORIGIN.,...".$origin);
         $carrierId = $request->get('carrier_id');
         $carrierName = $request->get('carrier_name');
         $carrierEmail = $request->get('carrier_email');
