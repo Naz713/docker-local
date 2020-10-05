@@ -131,19 +131,34 @@ class RegisterController extends AbstractController
             ));
         }
 
+        $cn = $this->getDoctrine()->getManager()->getConnection();
+
         if (strlen($providerId)<=0){
             $providerId = null;
+
+        } elseif (strlen($providerName)<=0){
+            $stmt = "SELECT alias FROM shipment_provider WHERE id = $providerId";
+
+            $pstmt = $cn->prepare($stmt, array(\PDO::CURSOR_FWDONLY, \PDO::ATTR_CURSOR));
+            $pstmt->execute();
+            $providerName = $pstmt->fetchColumn();
         }
 
         if (strlen($carrierId)<=0){
             $carrierId = null;
+
+        } elseif (strlen($carrierName)<=0){
+            $stmt = "SELECT name FROM shipment_ff WHERE id = $carrierId";
+
+            $pstmt = $cn->prepare($stmt, array(\PDO::CURSOR_FWDONLY, \PDO::ATTR_CURSOR));
+            $pstmt->execute();
+            $carrierName = $pstmt->fetchColumn();
         }
 
         /*
          * Insert Register
          */
 
-        $cn = $this->getDoctrine()->getManager()->getConnection();
 
         $stmt = "
         INSERT INTO shipment_register 
@@ -176,14 +191,7 @@ class RegisterController extends AbstractController
          * Send email
          */
 
-        $message = (new \Swift_Message("Integración TiLatina - $carrierName / $providerName") )
-            ->setFrom("robot@bpm.tilatina.com")
-            ->setTo([$carrierEmail, $providerEmail])
-            ->setBody(
-                "$carrierName ha iniciado una integración con TiLatina y su proveedor $providerName.\n
-                Con la siguiente información:\n$notes",
-                'text/html');
-            $mailer->send($message);
+        //TODO
 
         return new JsonResponse(array(
             "code" => 200,
